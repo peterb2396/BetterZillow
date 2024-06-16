@@ -17,7 +17,6 @@
   
   // Define the endpoint
   router.post('/filter', (req, res) => {
-  
     try {
       const filteredData = readAndFilterExcel(req.body.minTemp, req.body.maxTemp, req.body.minDensity, req.body.maxDensity);
 
@@ -28,17 +27,22 @@
     }
   });
 
-  // Delete account
-  router.post('/get-places', async(req, response) => {
-    let lat = req.body.lat
-    let lon = req.body.lon
-    let radius = req.body.radius
-    let types = req.body.types
+  
+  router.post('/explore', async(req, response) => {
+    let town = req.body.town
+    //let radius = req.body.radius
+    let types = ["bar", "school", "cafe"]
+    
 
-    // Restrict within the map viewport.
-    axios.post(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="${lat},${lon}+"&radius="${radius}"&types="${types}"&key=${process.env.MAPS_KEY}`)
+
+    axios.post(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="${town.Latitude},${town.Longitude}+"&radius="${10}"&types="${types}"&key=${process.env.MAPS_KEY}`)
     .then((res) => {
       console.log(res)
+      response.send(res)
+    })
+    .catch((e) =>
+    {
+      console.log(e)
     })
   })
 

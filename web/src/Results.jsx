@@ -4,8 +4,9 @@ import Town from './Town';
 
 const Results = (props) => {
 
+
   const [selectedStateGroup, setSelectedStateGroup] = useState(props.results[0]);
-  const [dropdownTitle, setDropdownTitle] = useState(props.results[0][0].State);
+  const [dropdownTitle, setDropdownTitle] = useState(props.results[0]? props.results[0][0].State : null);
 
   const handleSelect = (eventKey) => {
     const selectedGroup = props.results.find(group => group[0].State === eventKey);
@@ -29,28 +30,44 @@ const Results = (props) => {
         </div>
 
         {/* Change state selection */}
-        <div style = {{display: 'flex', alignItems: 'center'}}>
-          <p style = {{margin: 0, marginRight: 5}}>Viewing matching cities in</p>
-          <DropdownButton id="dropdown-basic-button" title={dropdownTitle} onSelect={handleSelect}>
-            {props.results.map((stateGroup, index) => (
-              <Dropdown.Item key={index} eventKey={stateGroup[0].State}>
-                {stateGroup[0].State}
-              </Dropdown.Item>
-            ))}
-          </DropdownButton>
-        </div>
+        {selectedStateGroup && (
+            <div style = {{display: 'flex', alignItems: 'center'}}>
+            <p style = {{margin: 0, marginRight: 5}}>Viewing matching cities in</p>
+            <DropdownButton id="dropdown-basic-button" title={dropdownTitle} onSelect={handleSelect}>
+                {props.results.map((stateGroup, index) => (
+                <Dropdown.Item key={index} eventKey={stateGroup[0].State}>
+                    {stateGroup[0].State}
+                </Dropdown.Item>
+                ))}
+            </DropdownButton>
+            </div>
+        )}
+        
       </div>
 
-      {/* Results */}
-      <div style={{ marginTop: '50px', flex: 1, overflowY: 'auto'}}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px'}}>
-          {selectedStateGroup.map((town, index) => (
-            <div key={index}>
-              <Town town={town}></Town>
+      <hr style = {{marginBottom: 0, marginTop: 50}}></hr>
+      
+
+      {/* Results, if results exist */}
+      {selectedStateGroup && (
+        <div style={{ marginTop: '10px', flex: 1, overflowY: 'auto'}}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px'}}>
+            {selectedStateGroup.map((town, index) => (
+                <div key={index}>
+                <Town explored = {props.explored} explore = {props.explore} bookmark = {props.bookmark} bookmarks = {props.bookmarks} town={town}></Town>
+                </div>
+            ))}
             </div>
-          ))}
         </div>
-      </div>
+      )}
+
+      {!selectedStateGroup && (
+        <div style = {{display: 'flex', justifyContent: 'center', height: "100%", alignItems: 'center'}}>
+
+         <p style = {{fontWeight: 100, fontSize: 40}}>No towns found</p>
+        </div>
+      )}
+      
     </div>
   );
 }

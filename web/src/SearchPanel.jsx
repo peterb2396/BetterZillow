@@ -2,15 +2,27 @@ import React, { useState } from 'react';
 import axios from 'axios'
 
 const SearchPanel = (props) => {
-  const [minTemp, setMinTemp] = useState(0); // state for min temperature
-  const [maxTemp, setMaxTemp] = useState(100); // state for max temperature
-  const [minDensity, setMinDensity] = useState(0); // state for min temperature
-  const [maxDensity, setMaxDensity] = useState(75000); // state for max temperature
+  // Pull search options from localData
+  let opts = JSON.parse(localStorage.getItem('search_options'))
+  if (!opts)
+    opts = {}
 
-  const searchButtonTxt = "Browse Homes";
+  const stored_mintemp = opts.mintemp? opts.mintemp : 10
+  const stored_maxtemp = opts.maxtemp? opts.maxtemp : 100
+  const stored_mindensity = opts.mindensity? opts.mindensity : 100
+  const stored_maxdensity = opts.maxdensity? opts.maxdensity : 30000
+
+  const [minTemp, setMinTemp] = useState(stored_mintemp); // state for min temperature
+  const [maxTemp, setMaxTemp] = useState(stored_maxtemp); // state for max temperature
+  const [minDensity, setMinDensity] = useState(stored_mindensity); // state for min temperature
+  const [maxDensity, setMaxDensity] = useState(stored_maxdensity); // state for max temperature
+
+  let searchButtonTxt = "Browse Cities";
   const [buttonText, setButtonText] = useState(searchButtonTxt)
   
-  const SERVER_URL = "http://localhost:3001"
+  
+
+
 
   const handleMinTempChange = (event) => {
     setMinTemp(event.target.value); // update min temperature state
@@ -26,6 +38,32 @@ const SearchPanel = (props) => {
 
   const handleMaxDensityChange = (event) => {
     setMaxDensity(event.target.value); 
+
+  };
+
+  const confirmMinTempChange = (event) => {
+    opts.mintemp = event.target.value
+    localStorage.setItem("search_options", JSON.stringify(opts))
+  };
+
+  const confirmMaxTempChange = (event) => {
+    opts.maxtemp = event.target.value
+    localStorage.setItem("search_options", JSON.stringify(opts))
+
+  };
+
+  const confirmMinDensityChange = (event) => {
+    opts.mindensity = event.target.value
+    localStorage.setItem("search_options", JSON.stringify(opts))
+    
+
+  };
+
+  const confirmMaxDensityChange = (event) => {
+    opts.maxdensity = event.target.value
+    localStorage.setItem("search_options", JSON.stringify(opts))
+
+
   };
 
   function browse()
@@ -39,8 +77,9 @@ const SearchPanel = (props) => {
 
     // Display temperature matches for user to select from
     // reach server api to query excel sheet
-    axios.post(`${SERVER_URL}/filter`, {minTemp, maxTemp, minDensity, maxDensity})
+    axios.post(`${props.SERVER_URL}/filter`, {minTemp, maxTemp, minDensity, maxDensity})
     .then((res) => {
+      
       // Group data by State
       const groupedData = res.data.reduce((acc, item) => {
         const state = item.State;
@@ -81,6 +120,7 @@ const SearchPanel = (props) => {
               max={120}
               value={minTemp}
               onChange={handleMinTempChange}
+              onBlur={confirmMinTempChange}
             />
             <p>{minTemp}</p>
           </div>
@@ -94,12 +134,12 @@ const SearchPanel = (props) => {
               max={120}
               value={maxTemp}
               onChange={handleMaxTempChange}
+              onBlur={confirmMaxTempChange}
             />
 
             <p>{maxTemp}</p>
           </div>
 
-          <hr></hr>
         </div>
 
         <div>
@@ -111,9 +151,10 @@ const SearchPanel = (props) => {
               type="range"
               class="form-range"
               min={0}
-              max={70000}
+              max={75000}
               value={minDensity}
               onChange={handleMinDensityChange}
+              onBlur={confirmMinDensityChange}
             />
             <p>{minDensity}</p>
           </div>
@@ -128,10 +169,10 @@ const SearchPanel = (props) => {
               max={75000}
               value={maxDensity}
               onChange={handleMaxDensityChange}
+              onBlur={confirmMaxDensityChange}
             />
             <p>{maxDensity}</p>
           </div>
-          <hr></hr>
         </div>
         
         <button disabled = {buttonText !== searchButtonTxt} type="button" class="btn btn-primary" onClick={browse}>{buttonText}</button>
