@@ -59,19 +59,19 @@ def get_sleep_duration(error_reason):
     
     if 'Minutely' in error_reason:
         next_minute = now.replace(second=0, microsecond=0) + timedelta(minutes=1)
-        sleep_duration = (next_minute - now).total_seconds() +2
+        sleep_duration = (next_minute - now).total_seconds() +60
         print(f"Retrying in {int(sleep_duration)} seconds...")
         return sleep_duration
     
     elif 'Hourly' in error_reason:
         next_hour = now.replace(minute=0, second=0, microsecond=0) + timedelta(hours=1)
-        sleep_duration = (next_hour - now).total_seconds() +2
+        sleep_duration = (next_hour - now).total_seconds() +60
         print(f"Retrying in {int(sleep_duration)} seconds...")
         return sleep_duration
     
     elif 'Daily' in error_reason:
         next_day = now.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
-        sleep_duration = (next_day - now).total_seconds() +2
+        sleep_duration = (next_day - now).total_seconds() +60
         print(f"Retrying in {int(sleep_duration)} seconds...")
         return sleep_duration
     
